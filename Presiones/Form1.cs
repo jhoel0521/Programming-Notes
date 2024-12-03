@@ -10,18 +10,16 @@ namespace Presiones
     public partial class Form1 : Form
     {
         // variables
-        // all data
-        Dictionary<string, Dictionary<string, List<double>>>? data;
+
         // promedio diario
         Dictionary<string, double>? promedioDiario;
         // promedio por hora
-        Dictionary<string, double>? promedioHora;
+         Dictionary<string, Dictionary<string, double>>? promedioDiarioPorHora;
         public Form1()
         {
             InitializeComponent();
-            data = null;
-            this.promedioDiario = null;
-            this.promedioHora = null;
+            promedioDiario = null;
+            promedioDiarioPorHora = null;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -38,9 +36,8 @@ namespace Presiones
 
                 try
                 {
-                    this.data = ReadData(filePath);
-                    this.promedioDiario = PromedioDiario(this.data);
-                    this.promedioHora = PromedioHora(this.data);
+                    ReadData(filePath);
+
                     MessageBox.Show("Datos cargados exitosamente", "Carga exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -51,7 +48,7 @@ namespace Presiones
             }
         }
 
-        private static Dictionary<string, Dictionary<string, List<double>>> ReadData(string filePath)
+        private  void ReadData(string filePath)
         {
             var groupedData = new Dictionary<string, Dictionary<string, List<double>>>();
             var lines = File.ReadAllLines(filePath);
@@ -82,57 +79,35 @@ namespace Presiones
                     groupedData[dateKey][hourKey].Add(value);
                 }
             }
-
-            return groupedData;
-        }
-
-
-
-        private static Dictionary<string, double> PromedioDiario(Dictionary<string, Dictionary<string, List<double>>> data)
-        {
-            var PromedioDiario = new Dictionary<string, double>();
-
-            foreach (var DatosDiario in data)
+            promedioDiario = new Dictionary<string, double>();
+            promedioDiarioPorHora = new Dictionary<string, Dictionary<string, double>>();
+            foreach (var dateKey in groupedData.Keys)
             {
-                List<double> valoresDelDia = new List<double>();
-                foreach (var DatosHora in DatosDiario.Value)
+             
+                double acumulativoDia= 0;
+                int contador = 0;
+                promedioDiarioPorHora.Add(dateKey, new Dictionary<string, double>());
+                foreach (var hourKey in groupedData[dateKey].Keys)
                 {
-                    valoresDelDia.AddRange(DatosHora.Value);
+                    double acumulativoHora = 0;
+                    int contadorHora = 0;
+
+                    foreach (var value in groupedData[dateKey][hourKey])
+                    {
+                        acumulativoHora += value;
+                        acumulativoDia += value;
+                        contador++;
+                        contadorHora++;
+                    }
+                    promedioDiarioPorHora[dateKey].Add(hourKey, acumulativoHora / contadorHora);
                 }
-                PromedioDiario[DatosDiario.Key] = valoresDelDia.Average();
+                promedioDiario.Add(dateKey, acumulativoDia / contador);
             }
 
-            return PromedioDiario;
         }
 
 
-        private static Dictionary<string, double> PromedioHora(Dictionary<string, Dictionary<string, List<double>>> data)
-        {
-            var DatosPorHora = new Dictionary<string, List<double>>();
 
-            foreach (var DatosDiario in data)
-            {
-                foreach (var DatosPorHoraDeUnDia in DatosDiario.Value)
-                {
-                    if (!DatosPorHora.ContainsKey(DatosPorHoraDeUnDia.Key))
-                    {
-                        DatosPorHora[DatosPorHoraDeUnDia.Key] = new List<double>();
-                    }
-
-                    foreach (var valor in DatosPorHoraDeUnDia.Value)
-                    {
-                        DatosPorHora[DatosPorHoraDeUnDia.Key].Add(valor);
-                    }
-                }
-            }
-
-            Dictionary<string, double> PromedioPorHora = new Dictionary<string, double>();
-            foreach (var DatosPorHoraDeUnDia in DatosPorHora)
-            {
-                PromedioPorHora[DatosPorHoraDeUnDia.Key] = DatosPorHoraDeUnDia.Value.Average();
-            }
-            return PromedioPorHora;
-        }
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -153,10 +128,19 @@ namespace Presiones
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (this.promedioHora != null)
+            if (this.promedioDiarioPorHora != null)
             {
-                var promediosOrdenados = this.promedioHora.OrderBy(x => DateTime.ParseExact(x.Key, "HH:mm", CultureInfo.InvariantCulture));
-                textBox1.Text = string.Join(Environment.NewLine, promediosOrdenados.Select(x => $"{x.Key}: {x.Value}"));
+                string view = "";
+                foreach (var dateKey in this.promedioDiarioPorHora.Keys)
+                {
+                    view += $"{dateKey}:{Environment.NewLine}";
+                    foreach (var hourKey in this.promedioDiarioPorHora[dateKey].Keys)
+                    {
+                       view += $"\t{hourKey}: {this.promedioDiarioPorHora[dateKey][hourKey]}{Environment.NewLine}";
+                    }
+                    view += Environment.NewLine;
+                }
+                textBox1.Text = view;
             }
             else
             {
@@ -193,16 +177,16 @@ namespace Presiones
                 if (DialogResult.Yes == MessageBox.Show("¿Desea cargar los datos?", "Cargar datos", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
                 {
                     button1_Click(sender, e);
-                    button4_Click(sender, e);   
+                    button4_Click(sender, e);
                 }
             }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            if (this.promedioHora != null)
+            if (this.promedioDiarioPorHora != null)
             {
-                var promediosOrdenados = this.promedioHora.OrderBy(x => DateTime.ParseExact(x.Key, "HH:mm", CultureInfo.InvariantCulture));
+
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
                     Filter = "Archivos de texto (*.txt)|*.txt",
@@ -211,7 +195,17 @@ namespace Presiones
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string filePath = saveFileDialog.FileName;
-                    File.WriteAllLines(filePath, promediosOrdenados.Select(x => $"{x.Key}: {x.Value}"));
+                    string salidaText = "";
+                    foreach (var dateKey in this.promedioDiarioPorHora.Keys)
+                    {
+                        salidaText += $"{dateKey}:{Environment.NewLine}";
+                        foreach (var hourKey in this.promedioDiarioPorHora[dateKey].Keys)
+                        {
+                            salidaText += $"\t{hourKey}: {this.promedioDiarioPorHora[dateKey][hourKey]}{Environment.NewLine}";
+                        }
+                        salidaText += Environment.NewLine;
+                    }
+                    File.WriteAllText(filePath, salidaText);
                 }
                 else
                 {
