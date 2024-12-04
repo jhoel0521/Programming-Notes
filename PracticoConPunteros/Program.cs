@@ -70,6 +70,7 @@ namespace PracticoConPunteros
             Console.WriteLine();
 
             // Ordenar el array usando punteros
+            //El bloque fixed le indica al Garbage Collector que "fije" (fije en memoria), lo que significa que el GC no moverá el arreglo en memoria mientras el puntero esté en uso.
             fixed (int* primerElemento = &arr[0])
             {
                 OrdenarArrayWithPointers(primerElemento, n);
