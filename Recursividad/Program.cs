@@ -26,7 +26,7 @@ namespace Recursividad
             }
             int[] vector = new int[n];
             GenerarVector(vector, 0, r);
-            printVector(vector);
+            PrintVector(vector);
             Console.WriteLine();
             Console.WriteLine("El minimo es : " + MinVector(vector));
             Console.WriteLine("El maximo es : " + MaxVector(vector));
@@ -47,7 +47,7 @@ namespace Recursividad
 
             GenerarVector(vector, indice + 1, r);
         }
-        public static void printVector(int[] vector, int indice = 0)
+        public static void PrintVector(int[] vector, int indice = 0)
         {
             if (indice == vector.Length)
             {
@@ -58,7 +58,7 @@ namespace Recursividad
                 Console.Write($"Vector({vector.Length}) : ");
             }
             Console.Write(vector[indice] + " ");
-            printVector(vector, indice + 1);
+            PrintVector(vector, indice + 1);
 
         }
         public static int MinVector(int[] vector, int indice = 0)
