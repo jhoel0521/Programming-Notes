@@ -1,0 +1,62 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace ArbolBinario
+{
+    public interface IArbolBinario<T> where T : IComparable<T>
+    {
+        /// <summary>
+        /// Agrega un valor al árbol.
+        /// </summary>
+        /// <param name="valor">El valor a insertar.</param>
+        void Insertar(T valor);
+
+        /// <summary>
+        /// Verifica si un valor existe en el árbol.
+        /// </summary>
+        /// <param name="valor">El valor a buscar.</param>
+        /// <returns>True si el valor existe, de lo contrario false.</returns>
+        bool Contiene(T valor);
+
+        /// <summary>
+        /// Obtiene los elementos del árbol en orden.
+        /// </summary>
+        /// <returns>Una lista de elementos en orden.</returns>
+        List<T> RecorrerEnOrden();
+
+        /// <summary>
+        /// Obtiene los elementos del árbol en preorden.
+        /// </summary>
+        /// <returns>Una lista de elementos en preorden.</returns>
+        List<T> RecorrerPreOrden();
+
+        /// <summary>
+        /// Obtiene los elementos del árbol en postorden.
+        /// </summary>
+        /// <returns>Una lista de elementos en postorden.</returns>
+        List<T> RecorrerPostOrden();
+
+        /// <summary>
+        /// Calcula la profundidad máxima del árbol.
+        /// </summary>
+        /// <returns>La profundidad del árbol.</returns>
+        int Profundidad();
+
+        /// <summary>
+        /// Obtiene los elementos del árbol según el tipo de recorrido especificado.
+        /// </summary>
+        /// <param name="tipoRecorrido">El tipo de recorrido a realizar (InOrden, PreOrden, PostOrden).</param>
+        /// <returns>Una lista de elementos en el orden especificado.</returns>
+        List<T> RecorrerPorTipo(TipoRecorrido tipoRecorrido);
+    }
+
+    /// <summary>
+    /// Enumeración para los tipos de recorrido del árbol binario.
+    /// </summary>
+    public enum TipoRecorrido
+    {
+        InOrden = 1,
+        PreOrden = 2,
+        PostOrden = 3
+    }
+}
