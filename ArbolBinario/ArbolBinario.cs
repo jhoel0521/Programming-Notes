@@ -138,18 +138,36 @@ namespace ArbolBinario
 
         public void PrintComoArbol()
         {
-            PrintComoArbolRecursivo(Raiz, "", true);
+            PrintComoArbolRecursivo(Raiz, "", true, null);
         }
 
-        private void PrintComoArbolRecursivo(Nodo<T>* nodo, string indent, bool esUltimo)
+        private void PrintComoArbolRecursivo(Nodo<T>* nodo, string indent, bool esUltimo, bool? esDerecho)
         {
             if (nodo != null)
             {
-                Console.WriteLine(indent + (esUltimo ? "└─ " : "├─ ") + nodo->Valor);
+                string print = "";
+                if (esDerecho != null)
+                {
+                    print = indent + (esUltimo ? "└─" : "├─");
+                    if (esDerecho.Value)
+                    {
+                        print += "(R) ";
+                    }
+                    else
+                    {
+                        print += "(L) ";
+                    }
+                    print += nodo->Valor;
+                }
+                else
+                {
+                    print = indent + (esUltimo ? "└─" : "├─")+"(H)" + nodo->Valor;
+                }
+                Console.WriteLine(print);
 
                 string nuevoIndent = indent + (esUltimo ? "   " : "│  ");
-                PrintComoArbolRecursivo(nodo->Izquierdo, nuevoIndent, nodo->Derecho == null);
-                PrintComoArbolRecursivo(nodo->Derecho, nuevoIndent, true);
+                PrintComoArbolRecursivo(nodo->Izquierdo, nuevoIndent, nodo->Derecho == null, false);
+                PrintComoArbolRecursivo(nodo->Derecho, nuevoIndent, true, true);
             }
         }
 
@@ -192,5 +210,69 @@ namespace ArbolBinario
             }
             return elementos;
         }
+
+        public void Eliminar(T valor)
+        {
+            // eliminamos el nodo con el valor especificado
+            Raiz = EliminarRecursivo(Raiz, valor);
+        }
+        private Nodo<T>* EliminarRecursivo(Nodo<T>* nodo, T valor)
+        {
+            if (nodo == null) return null;
+
+            if (valor.CompareTo(nodo->Valor) < 0)
+            {
+                nodo->Izquierdo = EliminarRecursivo(nodo->Izquierdo, valor);
+            }
+            else if (valor.CompareTo(nodo->Valor) > 0)
+            {
+                nodo->Derecho = EliminarRecursivo(nodo->Derecho, valor);
+            }
+            else
+            {
+                // Caso 1: Nodo sin hijos
+                if (nodo->Izquierdo == null && nodo->Derecho == null)
+                {
+                    LiberarNodo(nodo);
+                    return null;
+                }
+
+                // Caso 2: Nodo con un hijo
+                if (nodo->Izquierdo == null)
+                {
+                    Nodo<T>* temp = nodo->Derecho;
+                    LiberarNodo(nodo);
+                    return temp;
+                }
+                else if (nodo->Derecho == null)
+                {
+                    Nodo<T>* temp = nodo->Izquierdo;
+                    LiberarNodo(nodo);
+                    return temp;
+                }
+
+                // Caso 3: Nodo con dos hijos
+                Nodo<T>* sucesor = MinimoNodo(nodo->Derecho);
+                nodo->Valor = sucesor->Valor;
+                nodo->Derecho = EliminarRecursivo(nodo->Derecho, sucesor->Valor);
+            }
+
+            return nodo;
+        }
+
+        private Nodo<T>* MinimoNodo(Nodo<T>* nodo)
+        {
+            while (nodo != null && nodo->Izquierdo != null)
+            {
+                nodo = nodo->Izquierdo;
+            }
+            return nodo;
+        }
+
+        private void LiberarNodo(Nodo<T>* nodo)
+        {
+            System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)nodo);
+        }
+
     }
 }

@@ -10,6 +10,12 @@ namespace ArbolBinario
         /// </summary>
         /// <param name="valor">El valor a insertar.</param>
         void Insertar(T valor);
+        
+        /// <summary>
+        /// Elimina un valor del árbol.
+        /// </summary>
+        /// <param name="valor">El valor a eliminar.</param>
+        void Eliminar(T valor);
 
         /// <summary>
         /// Verifica si un valor existe en el árbol.
