@@ -48,6 +48,17 @@ namespace ArbolBinario
         /// <param name="tipoRecorrido">El tipo de recorrido a realizar (InOrden, PreOrden, PostOrden).</param>
         /// <returns>Una lista de elementos en el orden especificado.</returns>
         List<T> RecorrerPorTipo(TipoRecorrido tipoRecorrido);
+        /// <summary>
+        /// Imprime el árbol en formato de árbol visual (jerárquico).
+        /// </summary>
+        void PrintComoArbol();
+
+        /// <summary>
+        /// Imprime el árbol según el tipo de recorrido especificado.
+        /// </summary>
+        /// <param name="tipoRecorrido">El tipo de recorrido a realizar (InOrden, PreOrden, PostOrden).</param>
+        void Print(TipoRecorrido tipoRecorrido);
+
     }
 
     /// <summary>
