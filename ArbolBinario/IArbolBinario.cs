@@ -41,6 +41,12 @@ namespace ArbolBinario
         /// </summary>
         /// <returns>Una lista de elementos en postorden.</returns>
         List<T> RecorrerPostOrden();
+        
+        /// <summary>
+        /// Obtiene los elementos del árbol por nivel.
+        /// </summary>
+        /// <returns>Una lista de elementos por nivel.</returns>
+        List<T> RecorrerPorNivel();
 
         /// <summary>
         /// Calcula la profundidad máxima del árbol.
@@ -65,6 +71,22 @@ namespace ArbolBinario
         /// <param name="tipoRecorrido">El tipo de recorrido a realizar (InOrden, PreOrden, PostOrden).</param>
         void Print(TipoRecorrido tipoRecorrido);
 
+        /// <summary>
+        /// Devuelve la cantidad de niveles del árbol
+        /// </summary>
+        /// <returns>Devuelve la cantidad de niveles del árbol</returns>
+        int CantidadNiveles();
+        /// <summary>
+        /// Devuelve la cantidad de nodos del árbol
+        /// </summary>
+        /// <returns>Devuelve la cantidad de nodos del árbol</returns>
+        int CantidadNodo();
+
+        /// <summary>
+        /// Elimina todos los elementos del árbol.
+        /// </summary>
+        void EliminarTodos();
+
     }
 
     /// <summary>
@@ -74,6 +96,7 @@ namespace ArbolBinario
     {
         InOrden = 1,
         PreOrden = 2,
-        PostOrden = 3
+        PostOrden = 3,
+        PorNivel = 4
     }
 }

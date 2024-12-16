@@ -210,6 +210,30 @@ namespace ArbolBinario
             }
             return elementos;
         }
+        public List<T> RecorrerPorNivel()
+        {
+            var resultado = new List<T>();
+            int altura = Profundidad();
+            for (int i = 1; i <= altura; i++)
+            {
+                RecorrerPorNivelRecursivo(Raiz, i, resultado);
+            }
+            return resultado;
+        }
+        private void RecorrerPorNivelRecursivo(Nodo<T>* nodo, int nivel, List<T> resultado)
+        {
+            if (nodo == null) return;
+
+            if (nivel == 1)
+            {
+                resultado.Add(nodo->Valor);
+            }
+            else if (nivel > 1)
+            {
+                RecorrerPorNivelRecursivo(nodo->Izquierdo, nivel - 1, resultado);
+                RecorrerPorNivelRecursivo(nodo->Derecho, nivel - 1, resultado);
+            }
+        }
 
         public void Eliminar(T valor)
         {
@@ -274,5 +298,34 @@ namespace ArbolBinario
             System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)nodo);
         }
 
+        public int CantidadNiveles()
+        {
+           return CalcularProfundidad(Raiz);
+        }
+
+       
+        public int CantidadNodo()
+        {
+            return ContarNodos(Raiz);
+        }
+        private int ContarNodos(Nodo<T>* nodo)
+        {
+            if (nodo == null) return 0;
+
+            return 1 + ContarNodos(nodo->Izquierdo) + ContarNodos(nodo->Derecho);
+        }
+
+        public void EliminarTodos()
+        {
+          Raiz=  EliminarTodosRecursivo(Raiz);
+        }
+        private Nodo<T>* EliminarTodosRecursivo(Nodo<T>* nodo)
+        {
+            if (nodo == null) return null;
+            nodo->Izquierdo = EliminarTodosRecursivo(nodo->Izquierdo);
+            nodo->Derecho = EliminarTodosRecursivo(nodo->Derecho);
+            LiberarNodo(nodo);
+            return null;
+        }
     }
 }
